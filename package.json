@@ -1,8 +1,8 @@
 {
-  "name": "node-inquirer-timer-cli",
+  "name": "timer-cli",
   "version": "0.0.2",
   "description": "Timer CLI",
-  "main": "src/index.ts",
+"main": "src/index.ts",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {

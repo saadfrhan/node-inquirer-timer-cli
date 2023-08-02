@@ -2,11 +2,12 @@
   "name": "node-inquirer-timer-cli",
   "version": "0.0.2",
   "description": "Timer CLI",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
+    "start": "npx nodemon src/index.ts",
     "lint": "tsc"
   },
   "keywords": [],
@@ -17,5 +18,11 @@
     "@types/node": "^20.4.5",
     "tsup": "^7.1.0",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^3.0.1",
+    "@inquirer/select": "^1.2.6",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1"
   }
 }

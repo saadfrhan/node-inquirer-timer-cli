@@ -1,5 +1,7 @@
 # Timer CLI
 
+## Roadmap
+
 - [x] Start a Timer.
 - [ ] Display Timer Status.
 - [ ] Stop the Timer.

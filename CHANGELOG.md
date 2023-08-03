@@ -1,5 +1,14 @@
 # node-inquirer-timer-cli
 
+## 0.2.0
+
+### Minor Changes
+
+- 5bb5587 - Added random sentence support and colored timer text
+  - For Timer
+    - Added support for displaying random sentence before the remaining time display.
+    - Colored the timer and timer status display.
+
 ## 0.1.0
 
 ### Minor Changes

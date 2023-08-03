@@ -1,5 +1,12 @@
 # node-inquirer-timer-cli
 
+## 0.2.0
+
+### Minor Changes
+
+- - Added support for displaying random sentence before the remaining time display.
+  - Colored the timer and timer status display.
+
 ## 0.1.0
 
 ### Minor Changes

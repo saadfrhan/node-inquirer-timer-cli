@@ -1,5 +1,11 @@
 # node-inquirer-timer-cli
 
+## 0.2.1
+
+### Patch Changes
+
+- 9dabcad: change pkg name, add release command
+
 ## 0.2.0
 
 ### Minor Changes

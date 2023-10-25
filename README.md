@@ -3,11 +3,11 @@
 ## Roadmap
 
 - [x] Start a Timer.
-- [ ] Display Timer Status.
+- [x] Display Timer Status.
 - [ ] Stop the Timer.
 - [ ] Pause and Resume.
 - [ ] Customize Timer Settings.
-- [ ] Countdown and Stopwatch Mode.
+- [x] Countdown and Stopwatch Mode.
 - [ ] Set Timer Duration both for the countdown and stopwatch modes. Practice setting timers for various time intervals.
 - [ ] Flags and command name support.
 - [ ] Alerts and Notifications.

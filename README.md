@@ -1,16 +1,14 @@
 # Timer CLI
 
-## Roadmap
+This is a minimal CLI tool that can be used to set a timer or start a stopwatch. It is built using Inquirer.js and TypeScript.
 
-- [x] Start a Timer.
-- [x] Display Timer Status.
-- [ ] Stop the Timer.
-- [ ] Pause and Resume.
-- [ ] Customize Timer Settings.
-- [x] Countdown and Stopwatch Mode.
-- [ ] Set Timer Duration both for the countdown and stopwatch modes. Practice setting timers for various time intervals.
-- [ ] Flags and command name support.
-- [ ] Alerts and Notifications.
-- [ ] Reset or Restart the Timer.
-- [ ] Time Tracking and Logging.
-- [ ] Multiple Timers.
+## Setup
+
+```bash
+git clone https://github.com/saadfrhan/timer
+cd timer
+pnpm i
+pnpm build
+npm link 
+timer
+```

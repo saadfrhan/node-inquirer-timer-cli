@@ -3,13 +3,13 @@ import { input, select } from "@inquirer/prompts";
 import {
   displayTimerStatus,
   formatStopwatchTime,
+  loadState,
   removeLeadingZeroAndConvertIntoNumber,
+  removeTheLatestState,
+  saveState,
   validateFormat,
 } from "./utils";
 import notifier from "node-notifier";
-import fs from "fs";
-
-const stateFilePath = "state.json";
 
 async function start() {
   try {
@@ -42,25 +42,6 @@ async function start() {
         process.exit(1);
       }
     }
-  }
-}
-
-function saveState(state: any) {
-  fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
-}
-
-function loadState() {
-  if (fs.existsSync(stateFilePath)) {
-    const state = fs.readFileSync(stateFilePath, "utf-8");
-    return JSON.parse(state);
-  }
-  return null;
-}
-
-function removeTheLatestState(type: 'timer' | 'stopwatch') {
-  const state = loadState();
-  if (state && state.type === type) {
-    fs.unlinkSync(stateFilePath);
   }
 }
 
@@ -130,7 +111,7 @@ async function startTimer() {
     } else if (key.toString() === "r") {
       clearInterval(timeInterval);
       process.stdin.removeAllListeners("data");
-      removeTheLatestState('timer');
+      removeTheLatestState("timer");
       startTimer();
     }
   });
@@ -187,7 +168,7 @@ async function startStopwatch() {
     } else if (key.toString() === "r") {
       clearInterval(stopwatchInterval);
       process.stdin.removeAllListeners("data");
-      removeTheLatestState('stopwatch');
+      removeTheLatestState("stopwatch");
       startStopwatch();
     }
   });

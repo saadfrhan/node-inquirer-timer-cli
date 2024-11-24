@@ -5,7 +5,7 @@ export function formatStopwatchTime(hours: number, minutes: number, seconds: num
 export function displayTimerStatus(minutes: number, seconds: number) {
 	console.log(`${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}\n`);
 
-  console.log("Press 'p' to pause/resume, 'q' to quit");
+  console.log("Press 'p' to pause/resume, 'q' to quit, 'r' to set a new timer.");
 }
 
 

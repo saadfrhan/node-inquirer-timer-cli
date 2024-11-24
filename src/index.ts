@@ -6,6 +6,10 @@ import {
   removeLeadingZeroAndConvertIntoNumber,
   validateFormat,
 } from "./utils";
+import notifier from "node-notifier";
+import fs from "fs";
+
+const stateFilePath = "state.json";
 
 async function start() {
   try {
@@ -14,6 +18,7 @@ async function start() {
       choices: [
         { name: "Stopwatch", value: "stopwatch" },
         { name: "Timer", value: "timer" },
+        { name: "Help", value: "help" },
         { name: "Exit", value: "exit" },
       ],
     });
@@ -22,6 +27,9 @@ async function start() {
       await startTimer();
     } else if (choice === "stopwatch") {
       await startStopwatch();
+    } else if (choice === "help") {
+      displayHelp();
+      start();
     } else {
       process.exit(0);
     }
@@ -37,16 +45,45 @@ async function start() {
   }
 }
 
-async function startTimer() {
-  const time = await input({
-    message: "Enter timer duration in this format minutes:seconds",
-    validate: (val) =>
-      validateFormat(val) || "You must enter in correct format. minutes:seconds",
-  });
+function saveState(state: any) {
+  fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
+}
 
-  const givenTime = time.split(":");
-  const minutes = removeLeadingZeroAndConvertIntoNumber(givenTime[0]!);
-  const seconds = removeLeadingZeroAndConvertIntoNumber(givenTime[1]!);
+function loadState() {
+  if (fs.existsSync(stateFilePath)) {
+    const state = fs.readFileSync(stateFilePath, "utf-8");
+    return JSON.parse(state);
+  }
+  return null;
+}
+
+function removeTheLatestState(type: 'timer' | 'stopwatch') {
+  const state = loadState();
+  if (state && state.type === type) {
+    fs.unlinkSync(stateFilePath);
+  }
+}
+
+async function startTimer() {
+  const savedState = loadState();
+  let minutes, seconds;
+
+  if (savedState && savedState.type === "timer") {
+    minutes = savedState.minutes;
+    seconds = savedState.seconds;
+    console.log("Loaded saved timer state.");
+  } else {
+    const time = await input({
+      message: "Enter timer duration in this format minutes:seconds",
+      validate: (val) =>
+        validateFormat(val) ||
+        "You must enter in correct format. minutes:seconds",
+    });
+
+    const givenTime = time.split(":");
+    minutes = removeLeadingZeroAndConvertIntoNumber(givenTime[0]!);
+    seconds = removeLeadingZeroAndConvertIntoNumber(givenTime[1]!);
+  }
 
   let remainingSeconds = seconds;
   let remainingMinutes = minutes;
@@ -59,6 +96,11 @@ async function startTimer() {
         if (remainingMinutes === 0) {
           clearInterval(timeInterval);
           console.log("Timer completed!");
+          notifier.notify({
+            title: "Timer",
+            message: "Timer completed!",
+            sound: true,
+          });
           return;
         }
         remainingSeconds = 59;
@@ -67,6 +109,11 @@ async function startTimer() {
         remainingSeconds--;
       }
       displayTimerStatus(remainingMinutes, remainingSeconds);
+      saveState({
+        type: "timer",
+        minutes: remainingMinutes,
+        seconds: remainingSeconds,
+      });
     }
   }, 1000);
 
@@ -80,20 +127,36 @@ async function startTimer() {
       clearInterval(timeInterval);
       process.stdin.removeAllListeners("data");
       start();
+    } else if (key.toString() === "r") {
+      clearInterval(timeInterval);
+      process.stdin.removeAllListeners("data");
+      removeTheLatestState('timer');
+      startTimer();
     }
   });
 }
 
 async function startStopwatch() {
+  const savedState = loadState();
   let seconds = 0;
   let minutes = 0;
   let isPaused = false;
+  let laps: string[] = [];
+
+  if (savedState && savedState.type === "stopwatch") {
+    console.log("Loaded saved stopwatch state.");
+    seconds = savedState.seconds;
+    minutes = savedState.minutes;
+    laps = savedState.laps;
+  }
 
   const stopwatchInterval = setInterval(() => {
     if (!isPaused) {
       console.clear();
       console.log(formatStopwatchTime(0, minutes, seconds));
-      console.log("\nPress 'p' to pause/resume, 'q' to exit");
+      console.log(
+        "\nPress 'p' to pause/resume, 'l' to record lap, 'q' to quit, 'r' to reset the stopwatch."
+      );
 
       seconds++;
 
@@ -101,6 +164,7 @@ async function startStopwatch() {
         seconds = 0;
         minutes++;
       }
+      saveState({ type: "stopwatch", minutes, seconds, laps });
     }
   }, 1000);
 
@@ -110,12 +174,46 @@ async function startStopwatch() {
     if (key.toString() === "p") {
       isPaused = !isPaused;
       console.log(isPaused ? "Stopwatch paused" : "Stopwatch resumed");
+    } else if (key.toString() === "l") {
+      const lapTime = formatStopwatchTime(0, minutes, seconds);
+      laps.push(lapTime);
+      console.log(`Lap recorded: ${lapTime}`);
     } else if (key.toString() === "q") {
       clearInterval(stopwatchInterval);
       process.stdin.removeAllListeners("data");
+      console.log("Laps recorded:");
+      laps.forEach((lap, index) => console.log(`Lap ${index + 1}: ${lap}`));
       start();
+    } else if (key.toString() === "r") {
+      clearInterval(stopwatchInterval);
+      process.stdin.removeAllListeners("data");
+      removeTheLatestState('stopwatch');
+      startStopwatch();
     }
   });
+}
+
+function displayHelp() {
+  console.log(`
+    Timer and Stopwatch CLI
+    =======================
+    Commands:
+      - Timer: Start a countdown timer
+      - Stopwatch: Start a stopwatch
+      - Help: Display this help message
+      - Exit: Exit the application
+
+    Timer Controls:
+      - p: Pause/Resume the timer
+      - q: Quit the timer
+      - r: Reset the timer
+
+    Stopwatch Controls:
+      - p: Pause/Resume the stopwatch
+      - l: Record a lap
+      - q: Quit the stopwatch
+      - r: Reset the stopwatch
+  `);
 }
 
 start();

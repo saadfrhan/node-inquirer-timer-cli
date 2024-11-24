@@ -1,6 +1,6 @@
 # Timer CLI
 
-This is a minimal CLI tool that can be used to set a timer or start a stopwatch. It is built using Inquirer.js and TypeScript.
+This is a minimal CLI tool that can be used to set a timer or start a stopwatch. You can pause/resume the timer/stopwatch by pressing `p` and you can exit timer/stopwatch by pressing `q`.
 
 ## Setup
 

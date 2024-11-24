@@ -93,7 +93,7 @@ async function startStopwatch() {
     if (!isPaused) {
       console.clear();
       console.log(formatStopwatchTime(0, minutes, seconds));
-      console.log("\nPress 'p' to pause/resume, 'q' to quit");
+      console.log("\nPress 'p' to pause/resume, 'q' to exit");
 
       seconds++;
 

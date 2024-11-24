@@ -1,6 +1,6 @@
 # Timer CLI
 
-This is a minimal CLI tool that can be used to:
+This is a CLI tool that can be used to:
 
 - set a timer or start a stopwatch.
 - You can pause/resume the timer/stopwatch by pressing `p`.

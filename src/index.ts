@@ -25,7 +25,6 @@ async function start() {
     });
 
     if (choice === "timer") {
-      // Ask for timer duration
       const time = await input({
         message: "Enter timer duration in this format minutes:seconds",
         validate: (val) =>
@@ -33,77 +32,79 @@ async function start() {
           "You must enter in correct format. minutes:seconds",
       });
 
-      // Format user input
       const givenTime = time.split(":");
       const minutes = removeLeadingZeroAndConvertIntoNumber(givenTime[0]!);
       const seconds = removeLeadingZeroAndConvertIntoNumber(givenTime[1]!);
 
-      // Calculate days
-      const endDays = minutes / 60 / 24;
-
-      // Get original time
-      const originalTime = new Date();
-      const originalHours = originalTime.getHours();
-      const originalMinutes = originalTime.getMinutes();
-
-      // Clone given seconds and minutes in mutating variables
       let remainingSeconds = seconds;
       let remainingMinutes = minutes;
-
-      // Calculate timer end time
-      const newMinutes = (originalMinutes + remainingMinutes) % 60;
-      const additionalHours = Math.floor(
-        (originalMinutes + remainingMinutes) / 60
-      );
-      const newHours = (originalHours + additionalHours) % 24;
+      let isPaused = false;
 
       const timeInterval = setInterval(() => {
-        console.clear();
-        if (remainingSeconds === 60 || remainingSeconds === 0) {
-          remainingSeconds = 59;
-        } else {
-          remainingSeconds--;
-        }
-        displayTimerStatus(
-          remainingMinutes,
-          remainingSeconds,
-          newHours,
-          newMinutes,
-          endDays
-        );
-        if (remainingSeconds < 0) {
-          remainingSeconds = 59;
-          remainingMinutes--;
+        if (!isPaused) {
+          console.clear();
+          if (remainingSeconds === 0) {
+            if (remainingMinutes === 0) {
+              clearInterval(timeInterval);
+              console.log("Timer completed!");
+              return;
+            }
+            remainingSeconds = 59;
+            remainingMinutes--;
+          } else {
+            remainingSeconds--;
+          }
+          displayTimerStatus(
+            remainingMinutes,
+            remainingSeconds
+          );
 
-          if (remainingSeconds < 0) {
-            clearInterval(timeInterval);
-            console.log("Timer completed!");
+        }
+      }, 1000);
+      
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+      process.stdin.on("data", (key) => {
+        if (key.toString() === "p") {
+          isPaused = !isPaused;
+          console.log(isPaused ? "Timer paused" : "Timer resumed");
+        } else if (key.toString() === "q") {
+          clearInterval(timeInterval);
+          process.exit(0);
+        }
+      });
+    } else {
+      let seconds = 0;
+      let minutes = 0;
+      let isPaused = false;
+      
+      const stopwatchInterval = setInterval(() => {
+        if (!isPaused) {
+          console.clear();
+          console.log(formatStopwatchTime(0, minutes, seconds));
+          console.log("\nPress 'p' to pause/resume, 'q' to quit");
+      
+          seconds++;
+      
+          if (seconds === 60) {
+            seconds = 0;
+            minutes++;
           }
         }
       }, 1000);
-    } else {
-      let milliseconds = 0;
-      let seconds = 0;
-      let minutes = 0;
 
-      function updateTimer() {
-        console.clear();
-        console.log(formatStopwatchTime(0, minutes, seconds, milliseconds));
-
-        milliseconds += 10;
-
-        if (milliseconds >= 1000) {
-          milliseconds = 0;
-          seconds++;
+      // Listen for pause and resume
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+      process.stdin.on("data", (key) => {
+        if (key.toString() === "p") {
+          isPaused = !isPaused;
+          console.log(isPaused ? "Stopwatch paused" : "Stopwatch resumed");
+        } else if (key.toString() === "q") {
+          clearInterval(stopwatchInterval);
+          process.exit(0);
         }
-
-        if (seconds === 60) {
-          seconds = 0;
-          minutes++;
-        }
-      }
-
-      setInterval(updateTimer, 10);
+      });
     }
   } catch (error) {
     if (error instanceof Error) {
